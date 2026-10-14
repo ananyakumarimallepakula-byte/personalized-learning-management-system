@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance History - LearnPredict</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/student/dashboard.html">
+                <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+                <span class="brand-font fs-4">LearnPredict</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <a href="/student/dashboard.html" class="btn btn-outline-primary btn-sm"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                <button class="btn btn-outline-danger btn-sm" onclick="Auth.logout()"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-heading">Learning Engine</div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/dashboard.html" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="/student/weak-topics.html" class="sidebar-link"><i class="bi bi-exclamation-triangle"></i> Weak Topics</a></li>
+                <li><a href="/student/predictions.html" class="sidebar-link"><i class="bi bi-graph-up-arrow"></i> Predictions & Risk</a></li>
+                <li><a href="/student/recommendations.html" class="sidebar-link"><i class="bi bi-compass"></i> Recommendations</a></li>
+                <li><a href="/student/practice.html" class="sidebar-link"><i class="bi bi-pencil-square"></i> Practice Engine</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Courses & Quizzes</div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/subjects.html" class="sidebar-link"><i class="bi bi-book"></i> Subjects</a></li>
+                <li><a href="/student/topics.html" class="sidebar-link"><i class="bi bi-diagram-3"></i> Topics</a></li>
+                <li><a href="/student/quiz-list.html" class="sidebar-link"><i class="bi bi-ui-checks"></i> Available Quizzes</a></li>
+                <li><a href="/student/performance.html" class="sidebar-link active"><i class="bi bi-bar-chart-line"></i> Performance History</a></li>
+                <li><a href="/student/materials.html" class="sidebar-link"><i class="bi bi-journal-text"></i> Study Materials</a></li>
+                <li><a href="/student/progress.html" class="sidebar-link"><i class="bi bi-check2-circle"></i> Progress Tracker</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Academic Performance Analytics</h2>
+                    <p class="text-muted small mb-0">Detailed breakdown of subject proficiency, topic attempt histories, and trend metrics.</p>
+                </div>
+            </div>
+
+            <!-- Subject-wise Performance Cards -->
+            <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-mortarboard me-2 text-primary"></i>Subject-Wise Breakdown</h5>
+            <div class="row g-3 mb-5" id="subject-cards-row">
+                <div class="col-12 text-center py-3"><span class="spinner-border spinner-border-sm me-2"></span>Loading subject averages...</div>
+            </div>
+
+            <!-- Topic Performance Table -->
+            <div class="card card-custom shadow-sm mb-5">
+                <div class="card-header-custom">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-table me-2 text-primary"></i>Topic-Wise Performance Metrics</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>Subject</th>
+                                <th>Attempts</th>
+                                <th>Average Score</th>
+                                <th>Trend</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topic-performance-tbody">
+                            <tr><td colspan="7" class="text-center py-4"><span class="spinner-border spinner-border-sm me-2"></span>Loading topic metrics...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quiz Attempts History -->
+            <div class="card card-custom shadow-sm mb-4">
+                <div class="card-header-custom">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-primary"></i>Past Quiz Attempts</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Attempt ID</th>
+                                <th>Quiz Assessment</th>
+                                <th>Date & Time</th>
+                                <th>Score</th>
+                                <th>Percentage</th>
+                                <th>Result Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attempts-history-tbody">
+                            <tr><td colspan="6" class="text-center py-4"><span class="spinner-border spinner-border-sm me-2"></span>Loading quiz history...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireRole('STUDENT')) return;
+            const student = Auth.getUser();
+
+            try {
+                // 1. Subjects
+                const subMap = await API.get(`/students/${student.id}/performance/subjects`);
+                const subRow = document.getElementById('subject-cards-row');
+                subRow.innerHTML = Object.entries(subMap).map(([name, score]) => `
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-card-title">${name}</div>
+                            <div class="fs-2 fw-bold mt-2 ${score < 60 ? 'text-danger' : (score <= 75 ? 'text-warning' : 'text-success')}">${score}%</div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar ${score < 60 ? 'bg-danger' : (score <= 75 ? 'bg-warning' : 'bg-success')}" style="width: ${score}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // 2. Topics
+                const topics = await API.get(`/students/${student.id}/performance/topics`);
+                const topicTbody = document.getElementById('topic-performance-tbody');
+                topicTbody.innerHTML = topics.map(tp => `
+                    <tr>
+                        <td class="fw-bold">${tp.topicName}</td>
+                        <td class="text-muted">${tp.subjectName || ''}</td>
+                        <td>${tp.totalAttempts}</td>
+                        <td><span class="fw-semibold ${tp.averagePercentage < 60 ? 'text-danger' : 'text-dark'}">${Utils.formatPercentage(tp.averagePercentage)}</span></td>
+                        <td><span class="badge ${tp.trend === 'IMPROVING' ? 'bg-success' : (tp.trend === 'DECLINING' ? 'bg-danger' : 'bg-secondary')}">${tp.trend}</span></td>
+                        <td>${Utils.getStatusBadge(tp.status)}</td>
+                        <td class="text-end">
+                            <a href="/student/practice.html?topicId=${tp.topicId}" class="btn btn-sm btn-outline-primary">
+                                Practice
+                            </a>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // 3. Quiz Attempts
+                const attempts = await API.get(`/students/${student.id}/attempts`);
+                const attemptsTbody = document.getElementById('attempts-history-tbody');
+                if (!attempts || attempts.length === 0) {
+                    attemptsTbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">No attempts logged yet.</td></tr>`;
+                } else {
+                    attemptsTbody.innerHTML = attempts.map(att => `
+                        <tr>
+                            <td>#${att.attemptId}</td>
+                            <td class="fw-semibold">${att.quizTitle}</td>
+                            <td class="text-muted">${Utils.formatDate(att.submittedAt)}</td>
+                            <td>${att.score} / ${att.totalQuestions}</td>
+                            <td><span class="fw-bold ${att.percentage < 60 ? 'text-danger' : 'text-success'}">${Utils.formatPercentage(att.percentage)}</span></td>
+                            <td>
+                                <a href="/student/quiz-result.html?attemptId=${att.attemptId}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye me-1"></i>View Breakdown
+                                </a>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+            } catch (err) {
+                console.error('Error loading performance:', err);
+            }
+        });
+    </script>
+</body>
+</html>

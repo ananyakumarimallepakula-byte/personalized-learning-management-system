@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnPredict - Personalized Student Learning & Weak-Topic Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/index.html">
+                <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+                <span class="brand-font fs-4">LearnPredict</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+                    <li class="nav-item"><a class="nav-link active fw-medium" href="/index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="/about.html">Architecture & AI Logic</a></li>
+                </ul>
+                <div id="navbar-auth-controls"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient">
+        <div class="container py-5 text-center text-lg-start">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <span class="badge bg-primary bg-opacity-50 text-white px-3 py-2 rounded-pill mb-3 fw-semibold">
+                        <i class="bi bi-cpu me-1"></i> Multi-Factor Predictive Learning
+                    </span>
+                    <h1 class="display-4 fw-bold mb-3 text-white">
+                        Personalized Student Learning & <span style="background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Weak-Topic Prediction</span>
+                    </h1>
+                    <p class="lead text-light opacity-75 mb-4 pe-lg-5">
+                        A full-stack intelligent education system that analyzes individual quiz attempts, tracks topic retention, predicts failure risk, and auto-generates custom learning paths for every learner.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                        <a href="/login.html" class="btn btn-primary btn-lg px-4 py-3 shadow">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In & Demo
+                        </a>
+                        <a href="/register.html" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-person-plus me-2"></i>Student Registration
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5 mt-5 mt-lg-0 text-center">
+                    <div class="card card-custom border-0 p-4 shadow-lg text-start" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.15) !important;">
+                        <h5 class="text-white fw-bold mb-3"><i class="bi bi-activity text-info me-2"></i>Real-Time Prediction Feedback</h5>
+                        <div class="p-3 rounded mb-2 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-white fw-semibold">Java Inheritance</span>
+                                <span class="badge bg-danger">HIGH RISK (78%)</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-danger" style="width: 45%;"></div>
+                            </div>
+                            <small class="text-muted mt-1 d-block">Recommended: Inheritance Notes, Video & 10 Practice Qs</small>
+                        </div>
+                        <div class="p-3 rounded mb-2 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-white fw-semibold">DBMS SQL Joins</span>
+                                <span class="badge bg-danger">HIGH RISK (72%)</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-danger" style="width: 52%;"></div>
+                            </div>
+                            <small class="text-muted mt-1 d-block">Recommended: SQL Aggregations Manual & Practice</small>
+                        </div>
+                        <div class="p-3 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-white fw-semibold">Java OOP Concepts</span>
+                                <span class="badge bg-success">STRONG (82%)</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 82%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Functional Pipeline -->
+    <section class="py-5 bg-white">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h6 class="text-primary fw-bold text-uppercase">The Intelligence Pipeline</h6>
+                <h2 class="display-6 fw-bold">How the Adaptive Feedback Loop Works</h2>
+            </div>
+            <div class="row g-4 text-center">
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="fs-1 text-primary mb-3"><i class="bi bi-file-earmark-check"></i></div>
+                        <h5 class="fw-bold">1. Quiz Evaluation</h5>
+                        <p class="text-muted small">Server-side validated answer scoring that tracks question difficulty, time spent, and wrong options.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="fs-1 text-danger mb-3"><i class="bi bi-graph-down-arrow"></i></div>
+                        <h5 class="fw-bold">2. Weak-Topic Prediction</h5>
+                        <p class="text-muted small">Multi-factor risk score calculation (historical performance, decline trends, wrong answer rate, and inactivity).</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="fs-1 text-success mb-3"><i class="bi bi-compass"></i></div>
+                        <h5 class="fw-bold">3. Personalized Plan</h5>
+                        <p class="text-muted small">Auto-generated learning recommendations with targeted notes, videos, and personalized practice queues.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Accounts Card -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="card card-custom border-primary p-4 shadow">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="fw-bold mb-1 text-dark">Ready to test the system?</h4>
+                        <p class="text-muted mb-0">Experience full student, teacher, or administrator workflows using seeded demo accounts.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="/login.html" class="btn btn-primary px-4 py-2">Open Login Portal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2026 LearnPredict - Personalized Student Learning & Weak-Topic Prediction System.</p>
+            <small class="text-muted">Built with Java Spring Boot 3, Hibernate JPA, MySQL 8, Bootstrap 5 & Chart.js</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+</body>
+</html>
