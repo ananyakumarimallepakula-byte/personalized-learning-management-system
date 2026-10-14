@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - LearnPredict</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/admin/dashboard.html">
+                <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+                <span class="brand-font fs-4">LearnPredict</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <span class="badge bg-danger px-3 py-2 fw-semibold">ADMIN CONSOLE</span>
+                <span id="admin-name-display" class="fw-semibold text-dark">Administrator</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="Auth.logout()"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-heading">System Overview</div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/dashboard.html" class="sidebar-link active"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="/admin/reports.html" class="sidebar-link"><i class="bi bi-pie-chart"></i> System Reports</a></li>
+                <li><a href="/admin/settings.html" class="sidebar-link"><i class="bi bi-sliders"></i> Algorithm Settings</a></li>
+            </ul>
+
+            <div class="sidebar-heading">User Directory</div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/users.html" class="sidebar-link"><i class="bi bi-people"></i> All Users</a></li>
+                <li><a href="/admin/students.html" class="sidebar-link"><i class="bi bi-mortarboard"></i> Students</a></li>
+                <li><a href="/admin/teachers.html" class="sidebar-link"><i class="bi bi-person-badge"></i> Instructors</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Curriculum Catalog</div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/subjects.html" class="sidebar-link"><i class="bi bi-book"></i> Subjects</a></li>
+                <li><a href="/admin/topics.html" class="sidebar-link"><i class="bi bi-diagram-3"></i> Topics</a></li>
+                <li><a href="/admin/quizzes.html" class="sidebar-link"><i class="bi bi-ui-checks"></i> Quizzes</a></li>
+                <li><a href="/admin/questions.html" class="sidebar-link"><i class="bi bi-question-circle"></i> Questions</a></li>
+                <li><a href="/admin/materials.html" class="sidebar-link"><i class="bi bi-journal-text"></i> Materials</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">System Health & Operations</h2>
+                    <p class="text-muted small mb-0">Platform telemetry, user growth statistics, and academic evaluation volume.</p>
+                </div>
+            </div>
+
+            <!-- Global Metric Counters -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-xl-2">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-value text-primary" id="total-users-val">0</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-2">
+                    <div class="stat-card">
+                        <div class="stat-label">Students</div>
+                        <div class="stat-value text-success" id="total-students-val">0</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-2">
+                    <div class="stat-card">
+                        <div class="stat-label">Teachers</div>
+                        <div class="stat-value text-info" id="total-teachers-val">0</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-2">
+                    <div class="stat-card">
+                        <div class="stat-label">Quizzes</div>
+                        <div class="stat-value text-warning" id="total-quizzes-val">0</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-2">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Attempts</div>
+                        <div class="stat-value text-danger" id="total-attempts-val">0</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-2">
+                    <div class="stat-card">
+                        <div class="stat-label">Subjects</div>
+                        <div class="stat-value text-secondary" id="total-subjects-val">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-7">
+                    <div class="card card-custom p-4 shadow-sm h-100">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-fill me-2 text-primary"></i>System Architecture Volume</h5>
+                        <p class="text-muted small">Distribution of active records across platform entities.</p>
+                        <div style="height: 300px;">
+                            <canvas id="systemOverviewChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card card-custom p-4 shadow-sm h-100">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill me-2 text-danger"></i>Platform Weak-Topic Density</h5>
+                        <p class="text-muted small">Topics triggering the highest volume of student remediation warnings.</p>
+                        <div style="height: 300px;">
+                            <canvas id="weakTopicAnalyticsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Management Tiles -->
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 shadow-sm">
+                        <h6 class="fw-bold"><i class="bi bi-people me-2 text-primary"></i>User Governance</h6>
+                        <p class="text-muted small">Inspect accounts, toggle activation status, or remove users.</p>
+                        <a href="/admin/users.html" class="btn btn-outline-primary btn-sm">Manage Users</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 shadow-sm">
+                        <h6 class="fw-bold"><i class="bi bi-book me-2 text-success"></i>Curriculum Engine</h6>
+                        <p class="text-muted small">Manage subjects, topics, question banks, and learning items.</p>
+                        <a href="/admin/subjects.html" class="btn btn-outline-success btn-sm">Catalog Control</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 shadow-sm">
+                        <h6 class="fw-bold"><i class="bi bi-sliders me-2 text-warning"></i>Prediction Engine Tuning</h6>
+                        <p class="text-muted small">Adjust multi-factor weightings and risk cut-off thresholds.</p>
+                        <a href="/admin/settings.html" class="btn btn-outline-warning btn-sm">Tune Weights</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Auth.requireRole('ADMIN')) return;
+            const admin = Auth.getUser();
+            if (admin) document.getElementById('admin-name-display').textContent = admin.name;
+            AdminApp.loadDashboard();
+        });
+    </script>
+</body>
+</html>

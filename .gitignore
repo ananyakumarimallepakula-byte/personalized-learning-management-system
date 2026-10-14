@@ -1,0 +1,53 @@
+# === Java / Spring Boot ===
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# === IDE ===
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Maven ===
+.mvn/
+mvnw
+mvnw.cmd
+
+# === Node / Frontend ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# === Logs ===
+*.log
+logs/
+
+# === Build output ===
+build/
+dist/
+out/
+
+# === Environment ===
+.env
+.env.local
+.env.*.local
+
+# === Database files ===
+*.db
+*.sqlite
+
+# === Backend data directory ===
+backend/data/

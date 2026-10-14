@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Study Materials - Teacher Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/teacher/dashboard.html">
+                <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+                <span class="brand-font fs-4">LearnPredict</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <span class="badge bg-info text-dark px-3 py-2 fw-semibold">TEACHER PORTAL</span>
+                <span id="teacher-name-display" class="fw-semibold text-dark">Instructor</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="Auth.logout()"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-heading">Analytics & Reports</div>
+            <ul class="sidebar-nav">
+                <li><a href="/teacher/dashboard.html" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="/teacher/performance.html" class="sidebar-link"><i class="bi bi-bar-chart-line"></i> Student Performance</a></li>
+                <li><a href="/teacher/reports.html" class="sidebar-link"><i class="bi bi-file-earmark-bar-graph"></i> Weak-Topic Reports</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Curriculum Management</div>
+            <ul class="sidebar-nav">
+                <li><a href="/teacher/subjects.html" class="sidebar-link"><i class="bi bi-book"></i> Subjects</a></li>
+                <li><a href="/teacher/topics.html" class="sidebar-link"><i class="bi bi-diagram-3"></i> Topics</a></li>
+                <li><a href="/teacher/materials.html" class="sidebar-link active"><i class="bi bi-journal-text"></i> Study Materials</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Assessment Center</div>
+            <ul class="sidebar-nav">
+                <li><a href="/teacher/questions.html" class="sidebar-link"><i class="bi bi-question-circle"></i> Question Bank</a></li>
+                <li><a href="/teacher/manage-quizzes.html" class="sidebar-link"><i class="bi bi-ui-checks"></i> Manage Quizzes</a></li>
+                <li><a href="/teacher/create-quiz.html" class="sidebar-link"><i class="bi bi-plus-circle"></i> Create Quiz</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Students</div>
+            <ul class="sidebar-nav">
+                <li><a href="/teacher/students.html" class="sidebar-link"><i class="bi bi-people"></i> Enrolled Students</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h2 class="fw-bold mb-1">Study Materials Repository</h2>
+                    <p class="text-muted small mb-0">Publish targeted instructional materials, notes, and videos recommended to struggling students.</p>
+                </div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createMaterialModal">
+                    <i class="bi bi-cloud-arrow-up me-1"></i>Publish Material
+                </button>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="card card-custom p-3 mb-4 shadow-sm">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-5">
+                        <label class="form-label small fw-semibold mb-1">Filter by Learning Topic:</label>
+                        <select id="filter-material-topic" class="form-select">
+                            <option value="">All Topics</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-custom shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Material Title</th>
+                                    <th>Topic</th>
+                                    <th>Type</th>
+                                    <th>Difficulty</th>
+                                    <th>Resource Link</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materials-table-body">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading materials...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Material Modal -->
+    <div class="modal fade" id="createMaterialModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="create-material-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Publish Learning Material</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Target Topic <span class="text-danger">*</span></label>
+                                <select id="mat-topic" class="form-select" required>
+                                    <option value="">Select Topic</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold">Material Format</label>
+                                <select id="mat-type" class="form-select">
+                                    <option value="NOTES">Notes / Cheatsheet</option>
+                                    <option value="VIDEO">Video Tutorial</option>
+                                    <option value="PDF">PDF Textbook</option>
+                                    <option value="ARTICLE">Web Article</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold">Difficulty</label>
+                                <select id="mat-diff" class="form-select">
+                                    <option value="EASY">Easy</option>
+                                    <option value="MEDIUM" selected>Medium</option>
+                                    <option value="HARD">Hard</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Material Title <span class="text-danger">*</span></label>
+                                <input type="text" id="mat-title" class="form-control" required placeholder="e.g. Comprehensive Guide to Tree Traversals">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">External Resource URL</label>
+                                <input type="url" id="mat-url" class="form-control" placeholder="https://example.com/notes.pdf or YouTube link">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Summary & Key Concepts</label>
+                                <textarea id="mat-content" class="form-control" rows="4" placeholder="Detailed learning takeaways and core formulas..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Publish Resource</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/teacher.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireRole('TEACHER')) return;
+
+            const teacher = Auth.getUser();
+            if (teacher) document.getElementById('teacher-name-display').textContent = teacher.name;
+
+            const filterSelect = document.getElementById('filter-material-topic');
+            const modalSelect = document.getElementById('mat-topic');
+            const tbody = document.getElementById('materials-table-body');
+
+            async function initTopics() {
+                try {
+                    const topics = await TeacherApp.loadTopics();
+                    filterSelect.innerHTML = '<option value="">All Topics</option>' +
+                        topics.map(t => `<option value="${t.id}">${t.name} (${t.subjectName || ''})</option>`).join('');
+
+                    modalSelect.innerHTML = '<option value="">Select Topic</option>' +
+                        topics.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+                } catch (err) {
+                    console.error('Failed to load topics', err);
+                }
+            }
+
+            async function renderMaterials() {
+                const topicId = filterSelect.value;
+                try {
+                    const materials = await TeacherApp.loadMaterials(topicId || null);
+                    if (!materials || materials.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No study materials published yet.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = materials.map(m => `
+                        <tr>
+                            <td class="fw-bold">#${m.id}</td>
+                            <td>
+                                <div class="fw-bold text-dark">${m.title}</div>
+                                <div class="text-muted small">${m.description || ''}</div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">${m.topicName || 'Topic'}</span></td>
+                            <td><span class="badge ${m.materialType === 'VIDEO' ? 'bg-danger' : (m.materialType === 'PDF' ? 'bg-warning text-dark' : 'bg-primary')}">${m.materialType}</span></td>
+                            <td>${Utils.getDifficultyBadge(m.difficulty)}</td>
+                            <td>
+                                ${m.contentUrl ? `<a href="${m.contentUrl}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-box-arrow-up-right me-1"></i>Open</a>` : '<span class="text-muted small">None</span>'}
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteMaterialItem(${m.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } catch (err) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-danger py-4 text-center">Failed to load materials: ${err.message}</td></tr>`;
+                }
+            }
+
+            window.deleteMaterialItem = async (id) => {
+                if (await TeacherApp.deleteMaterial(id)) {
+                    renderMaterials();
+                }
+            };
+
+            filterSelect.addEventListener('change', renderMaterials);
+
+            document.getElementById('create-material-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const topicId = modalSelect.value;
+                const type = document.getElementById('mat-type').value;
+                const diff = document.getElementById('mat-diff').value;
+                const title = document.getElementById('mat-title').value;
+                const url = document.getElementById('mat-url').value;
+                const content = document.getElementById('mat-content').value;
+
+                try {
+                    await TeacherApp.createMaterial({
+                        topicId: parseInt(topicId),
+                        title: title,
+                        materialType: type,
+                        difficulty: diff,
+                        contentUrl: url,
+                        content: content,
+                        active: true
+                    });
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createMaterialModal'));
+                    if (modal) modal.hide();
+                    document.getElementById('create-material-form').reset();
+                    renderMaterials();
+                } catch (err) {
+                    alert('Error publishing material: ' + err.message);
+                }
+            });
+
+            await initTopics();
+            renderMaterials();
+        });
+    </script>
+</body>
+</html>

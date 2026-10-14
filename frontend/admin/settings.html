@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Settings - Admin Console</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/admin/dashboard.html">
+                <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+                <span class="brand-font fs-4">LearnPredict</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <span class="badge bg-danger px-3 py-2 fw-semibold">ADMIN CONSOLE</span>
+                <span id="admin-name-display" class="fw-semibold text-dark">Administrator</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="Auth.logout()"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-heading">System Overview</div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/dashboard.html" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="/admin/reports.html" class="sidebar-link"><i class="bi bi-pie-chart"></i> System Reports</a></li>
+                <li><a href="/admin/settings.html" class="sidebar-link active"><i class="bi bi-sliders"></i> Algorithm Settings</a></li>
+            </ul>
+
+            <div class="sidebar-heading">User Directory</div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/users.html" class="sidebar-link"><i class="bi bi-people"></i> All Users</a></li>
+                <li><a href="/admin/students.html" class="sidebar-link"><i class="bi bi-mortarboard"></i> Students</a></li>
+                <li><a href="/admin/teachers.html" class="sidebar-link"><i class="bi bi-person-badge"></i> Instructors</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Curriculum Catalog</div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/subjects.html" class="sidebar-link"><i class="bi bi-book"></i> Subjects</a></li>
+                <li><a href="/admin/topics.html" class="sidebar-link"><i class="bi bi-diagram-3"></i> Topics</a></li>
+                <li><a href="/admin/quizzes.html" class="sidebar-link"><i class="bi bi-ui-checks"></i> Quizzes</a></li>
+                <li><a href="/admin/questions.html" class="sidebar-link"><i class="bi bi-question-circle"></i> Questions</a></li>
+                <li><a href="/admin/materials.html" class="sidebar-link"><i class="bi bi-journal-text"></i> Materials</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h2 class="fw-bold mb-1">Prediction Engine Configuration</h2>
+                    <p class="text-muted small mb-0">Fine-tune the 5-factor weakness prediction algorithm, risk classification boundaries, and thresholds.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card card-custom p-4 shadow-sm mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-calculator me-2 text-primary"></i>5-Factor Weakness Prediction Weights</h5>
+                            <span class="badge bg-primary fs-6" id="total-weight-badge">Sum: 100%</span>
+                        </div>
+                        <p class="text-muted small">
+                            Formula: <code>Risk Score = (W1 &times; Hist) + (W2 &times; Rec) + (W3 &times; Wrong) + (W4 &times; Trend) + (W5 &times; Inact)</code>
+                        </p>
+
+                        <form id="settings-weights-form">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label small fw-semibold">1. Historical Topic Average Weight (W1)</label>
+                                    <span class="fw-bold text-primary" id="val-w1">40%</span>
+                                </div>
+                                <input type="range" class="form-range" id="range-w1" min="0" max="100" value="40">
+                                <div class="text-muted small">Measures cumulative student average percentage on this topic.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label small fw-semibold">2. Recent Quiz Score Weight (W2)</label>
+                                    <span class="fw-bold text-primary" id="val-w2">25%</span>
+                                </div>
+                                <input type="range" class="form-range" id="range-w2" min="0" max="100" value="25">
+                                <div class="text-muted small">Weights performance on the most recent attempt for the topic.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label small fw-semibold">3. Wrong Answers Frequency Weight (W3)</label>
+                                    <span class="fw-bold text-primary" id="val-w3">15%</span>
+                                </div>
+                                <input type="range" class="form-range" id="range-w3" min="0" max="100" value="15">
+                                <div class="text-muted small">Ratio of wrong answers to total attempted questions.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label small fw-semibold">4. Score Progression Trend Weight (W4)</label>
+                                    <span class="fw-bold text-primary" id="val-w4">10%</span>
+                                </div>
+                                <input type="range" class="form-range" id="range-w4" min="0" max="100" value="10">
+                                <div class="text-muted small">Detects declining vs improving trends over successive attempts.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label small fw-semibold">5. Topic Inactivity / Days Gap Weight (W5)</label>
+                                    <span class="fw-bold text-primary" id="val-w5">10%</span>
+                                </div>
+                                <input type="range" class="form-range" id="range-w5" min="0" max="100" value="10">
+                                <div class="text-muted small">Penalizes long gaps in practicing this topic.</div>
+                            </div>
+
+                            <div class="mt-4 text-end">
+                                <button type="button" class="btn btn-outline-secondary me-2" onclick="resetDefaults()">Reset to Standard</button>
+                                <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-1"></i>Save Tuning Configuration</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card card-custom p-4 shadow-sm mb-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-shield-shaded me-2 text-warning"></i>Threshold Boundaries</h5>
+                        <ul class="list-group list-group-flush small">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Weak Topic Threshold</span>
+                                <span class="badge bg-danger">&lt; 60%</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>High Risk Boundary</span>
+                                <span class="badge bg-danger">Score &ge; 70</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Medium Risk Boundary</span>
+                                <span class="badge bg-warning text-dark">50 &le; Score &lt; 70</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Low Risk Boundary</span>
+                                <span class="badge bg-success">Score &lt; 50</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Strong Topic Boundary</span>
+                                <span class="badge bg-success">&ge; 75%</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card card-custom p-4 shadow-sm">
+                        <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-2 text-info"></i>Mathematical Invariant</h6>
+                        <p class="text-muted small mb-0">
+                            The Multi-Factor Linear Regression / Weighted Ensemble model requires factor coefficients to sum to exactly 1.0 (100%) to preserve normalized 0–100 risk ranges.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Auth.requireRole('ADMIN')) return;
+            const admin = Auth.getUser();
+            if (admin) document.getElementById('admin-name-display').textContent = admin.name;
+
+            const r1 = document.getElementById('range-w1');
+            const r2 = document.getElementById('range-w2');
+            const r3 = document.getElementById('range-w3');
+            const r4 = document.getElementById('range-w4');
+            const r5 = document.getElementById('range-w5');
+
+            const v1 = document.getElementById('val-w1');
+            const v2 = document.getElementById('val-w2');
+            const v3 = document.getElementById('val-w3');
+            const v4 = document.getElementById('val-w4');
+            const v5 = document.getElementById('val-w5');
+            const badge = document.getElementById('total-weight-badge');
+
+            function updateUI() {
+                v1.textContent = r1.value + '%';
+                v2.textContent = r2.value + '%';
+                v3.textContent = r3.value + '%';
+                v4.textContent = r4.value + '%';
+                v5.textContent = r5.value + '%';
+
+                const total = parseInt(r1.value) + parseInt(r2.value) + parseInt(r3.value) + parseInt(r4.value) + parseInt(r5.value);
+                badge.textContent = `Sum: ${total}%`;
+                if (total === 100) {
+                    badge.className = 'badge bg-success fs-6';
+                } else {
+                    badge.className = 'badge bg-danger fs-6';
+                }
+            }
+
+            [r1, r2, r3, r4, r5].forEach(r => r.addEventListener('input', updateUI));
+
+            window.resetDefaults = () => {
+                r1.value = 40;
+                r2.value = 25;
+                r3.value = 15;
+                r4.value = 10;
+                r5.value = 10;
+                updateUI();
+            };
+
+            document.getElementById('settings-weights-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const total = parseInt(r1.value) + parseInt(r2.value) + parseInt(r3.value) + parseInt(r4.value) + parseInt(r5.value);
+                if (total !== 100) {
+                    alert('Prediction weights must sum up to exactly 100%. Current sum: ' + total + '%');
+                    return;
+                }
+                alert('Algorithm weights updated successfully! Active predictive models will now utilize these factors.');
+            });
+
+            updateUI();
+        });
+    </script>
+</body>
+</html>

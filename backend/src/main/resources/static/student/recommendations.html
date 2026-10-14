@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Recommendations - LearnPredict</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/student/dashboard.html">
+                <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+                <span class="brand-font fs-4">LearnPredict</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <a href="/student/dashboard.html" class="btn btn-outline-primary btn-sm"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                <button class="btn btn-outline-danger btn-sm" onclick="Auth.logout()"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-heading">Learning Engine</div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/dashboard.html" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="/student/weak-topics.html" class="sidebar-link"><i class="bi bi-exclamation-triangle"></i> Weak Topics</a></li>
+                <li><a href="/student/predictions.html" class="sidebar-link"><i class="bi bi-graph-up-arrow"></i> Predictions & Risk</a></li>
+                <li><a href="/student/recommendations.html" class="sidebar-link active"><i class="bi bi-compass"></i> Recommendations</a></li>
+                <li><a href="/student/practice.html" class="sidebar-link"><i class="bi bi-pencil-square"></i> Practice Engine</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Courses & Quizzes</div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/subjects.html" class="sidebar-link"><i class="bi bi-book"></i> Subjects</a></li>
+                <li><a href="/student/topics.html" class="sidebar-link"><i class="bi bi-diagram-3"></i> Topics</a></li>
+                <li><a href="/student/quiz-list.html" class="sidebar-link"><i class="bi bi-ui-checks"></i> Available Quizzes</a></li>
+                <li><a href="/student/performance.html" class="sidebar-link"><i class="bi bi-bar-chart-line"></i> Performance History</a></li>
+                <li><a href="/student/materials.html" class="sidebar-link"><i class="bi bi-journal-text"></i> Study Materials</a></li>
+                <li><a href="/student/progress.html" class="sidebar-link"><i class="bi bi-check2-circle"></i> Progress Tracker</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1 text-primary"><i class="bi bi-compass-fill me-2"></i>Personalized Learning Plan</h2>
+                    <p class="text-muted small mb-0">Study content dynamically recommended for you based on detected weak areas and risk score priority.</p>
+                </div>
+            </div>
+
+            <div class="row g-4" id="recs-list">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted mt-2">Loading your customized study plan...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireRole('STUDENT')) return;
+            loadRecommendations();
+        });
+
+        async function loadRecommendations() {
+            const student = Auth.getUser();
+            const container = document.getElementById('recs-list');
+
+            try {
+                const recs = await API.get(`/students/${student.id}/recommendations`);
+                if (!recs || recs.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center text-muted py-5">No recommendations found. Take a quiz to generate your personalized plan.</div>';
+                    return;
+                }
+
+                container.innerHTML = recs.map(r => `
+                    <div class="col-md-6">
+                        <div class="card card-custom h-100 p-4 border-start border-4 ${r.priority === 'HIGH' ? 'border-danger' : 'border-warning'} shadow-sm ${r.completed ? 'bg-light opacity-75' : ''}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge ${r.priority === 'HIGH' ? 'bg-danger' : 'bg-warning text-dark'}">${r.priority} PRIORITY</span>
+                                <span class="badge bg-light text-dark border">${r.materialType || 'NOTES'}</span>
+                            </div>
+
+                            <h5 class="fw-bold mb-1">${r.materialTitle || 'Recommended Study Resource'}</h5>
+                            <p class="text-muted small mb-2"><i class="bi bi-bookmark me-1"></i>${r.topicName} <span class="text-secondary">(${r.subjectName || ''})</span></p>
+                            <p class="text-muted small mb-3">${r.reason || ''}</p>
+
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                <div>
+                                    ${r.contentUrl ? `<a href="${r.contentUrl}" target="_blank" class="btn btn-sm btn-primary"><i class="bi bi-box-arrow-up-right me-1"></i>Open Material</a>` : ''}
+                                </div>
+                                <div>
+                                    ${r.completed ? `
+                                        <span class="badge bg-success"><i class="bi bi-check2-circle me-1"></i>Completed</span>
+                                    ` : `
+                                        <button class="btn btn-sm btn-outline-success" onclick="completeRec(${r.id})">
+                                            <i class="bi bi-check-lg me-1"></i>Mark Done
+                                        </button>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = `<div class="col-12 text-center text-danger py-4">Error loading recommendations: ${err.message}</div>`;
+            }
+        }
+
+        async function completeRec(id) {
+            try {
+                await API.put(`/recommendations/${id}/complete`, {});
+                loadRecommendations();
+            } catch (err) {
+                alert('Error completing recommendation: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

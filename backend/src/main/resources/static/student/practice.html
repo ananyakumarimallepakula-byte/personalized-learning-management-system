@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Engine - LearnPredict</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/student/dashboard.html">
+                <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+                <span class="brand-font fs-4">LearnPredict</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <a href="/student/dashboard.html" class="btn btn-outline-primary btn-sm"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                <button class="btn btn-outline-danger btn-sm" onclick="Auth.logout()"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-heading">Learning Engine</div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/dashboard.html" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="/student/weak-topics.html" class="sidebar-link"><i class="bi bi-exclamation-triangle"></i> Weak Topics</a></li>
+                <li><a href="/student/predictions.html" class="sidebar-link"><i class="bi bi-graph-up-arrow"></i> Predictions & Risk</a></li>
+                <li><a href="/student/recommendations.html" class="sidebar-link"><i class="bi bi-compass"></i> Recommendations</a></li>
+                <li><a href="/student/practice.html" class="sidebar-link active"><i class="bi bi-pencil-square"></i> Practice Engine</a></li>
+            </ul>
+
+            <div class="sidebar-heading">Courses & Quizzes</div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/subjects.html" class="sidebar-link"><i class="bi bi-book"></i> Subjects</a></li>
+                <li><a href="/student/topics.html" class="sidebar-link"><i class="bi bi-diagram-3"></i> Topics</a></li>
+                <li><a href="/student/quiz-list.html" class="sidebar-link"><i class="bi bi-ui-checks"></i> Available Quizzes</a></li>
+                <li><a href="/student/performance.html" class="sidebar-link"><i class="bi bi-bar-chart-line"></i> Performance History</a></li>
+                <li><a href="/student/materials.html" class="sidebar-link"><i class="bi bi-journal-text"></i> Study Materials</a></li>
+                <li><a href="/student/progress.html" class="sidebar-link"><i class="bi bi-check2-circle"></i> Progress Tracker</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1 text-success"><i class="bi bi-pencil-square me-2"></i>Personalized Practice Engine</h2>
+                    <p class="text-muted small mb-0">Prioritizes unattempted questions and previously missed problems on your weak topics.</p>
+                </div>
+            </div>
+
+            <div id="practice-questions-list">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted mt-2">Loading customized practice problems...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireRole('STUDENT')) return;
+            const student = Auth.getUser();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const topicId = urlParams.get('topicId');
+
+            const container = document.getElementById('practice-questions-list');
+
+            try {
+                let questions = [];
+                if (topicId) {
+                    questions = await API.get(`/students/${student.id}/practice-questions/topic/${topicId}`);
+                } else {
+                    questions = await API.get(`/students/${student.id}/practice-questions`);
+                }
+
+                if (!questions || questions.length === 0) {
+                    container.innerHTML = `
+                        <div class="card card-custom p-5 text-center shadow-sm">
+                            <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+                            <h4 class="fw-bold">No Pending Practice Questions</h4>
+                            <p class="text-muted small">You have completed your recommended practice problems or all questions in this topic have been mastered.</p>
+                            <div>
+                                <a href="/student/quiz-list.html" class="btn btn-primary"><i class="bi bi-play-circle me-1"></i>Take A Quiz</a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = questions.map((q, idx) => `
+                    <div class="card card-custom p-4 mb-4 shadow-sm" id="card_q_${q.id}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="badge bg-primary me-1">Practice Question #${idx + 1}</span>
+                                <span class="badge bg-light text-dark border me-1">${q.topicName}</span>
+                                ${Utils.getDifficultyBadge(q.difficulty)}
+                            </div>
+                            <span class="badge ${q.priority === 'HIGH' ? 'bg-danger' : 'bg-warning text-dark'}">${q.priority} PRIORITY</span>
+                        </div>
+
+                        <h5 class="fw-bold my-3 text-dark">${q.questionText}</h5>
+
+                        <div class="options-group mb-3">
+                            ${(q.options || []).map((opt, optIdx) => `
+                                <div class="form-check p-0 mb-2">
+                                    <input type="radio" class="d-none practice-opt-input" 
+                                           name="p_q_${q.id}" id="p_opt_${opt.id}" 
+                                           value="${opt.id}" data-correct="${opt.isCorrect}">
+                                    <label class="quiz-option-label" for="p_opt_${opt.id}" id="label_${opt.id}">
+                                        <div class="quiz-option-circle">${String.fromCharCode(65 + optIdx)}</div>
+                                        <div>${opt.optionText}</div>
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div id="feedback_${q.id}" class="d-none alert my-2"></div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <small class="text-muted">${q.reason || 'Personalized Practice'}</small>
+                            <button class="btn btn-sm btn-primary" onclick="checkPracticeAnswer(${q.id}, '${q.explanation ? q.explanation.replace(/'/g, "\\'") : ''}')">
+                                <i class="bi bi-check-circle me-1"></i> Check Answer
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = `<div class="alert alert-danger">Error loading practice: ${err.message}</div>`;
+            }
+        });
+
+        async function checkPracticeAnswer(qId, explanation) {
+            const checked = document.querySelector(`input[name="p_q_${qId}"]:checked`);
+            const feedbackBox = document.getElementById(`feedback_${qId}`);
+
+            if (!checked) {
+                alert('Please select an option first!');
+                return;
+            }
+
+            const isCorrect = checked.getAttribute('data-correct') === 'true';
+            feedbackBox.classList.remove('d-none', 'alert-success', 'alert-danger');
+
+            if (isCorrect) {
+                feedbackBox.classList.add('alert-success');
+                feedbackBox.innerHTML = `<strong><i class="bi bi-check-circle-fill me-1"></i> Correct!</strong> ${explanation || 'Great job!'}`;
+            } else {
+                feedbackBox.classList.add('alert-danger');
+                feedbackBox.innerHTML = `<strong><i class="bi bi-x-circle-fill me-1"></i> Incorrect.</strong> ${explanation || 'Review the topic notes and try again.'}`;
+            }
+        }
+    </script>
+</body>
+</html>
